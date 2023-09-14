@@ -1,35 +1,39 @@
-import { defineStore } from 'pinia'
-
-type State = {
-  books: Book[]
-  loading: boolean
-}
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { searchBooks } from '../assets/ts/apiClient';
 
 type Book = {
-  id: string
-  title: string
-}
- 
-export const useBookStore = defineStore('BookStore', {
-    state: (): State => ({
-      books: [
-        { id: "ABC123", title: 'The Great Gatsby' },
-        { id: "ABC123", title: 'The Da Vinci Code' },
-        { id: "ABC123", title: 'Angels & Demons' },
-      ],
-      loading: false
-    }),
-    getters: {
-      allBooks: (state) => state.books,
-      book: (state: State): ((id: string) => Book | undefined) => {
-        return (id: string) => {
-          return state.books.find(book => book.id === id);
-        };
-      }
-    },
-    actions: {
-      addBook: (state: State, book: Book) => state.books.push(book)
-    }
-} )
+  id: string;
+  title: string;
+};
 
- 
+type State = {
+  books: Book[] | any; // TODO: REMOVE ANY
+  loading: boolean;
+  searchTerm: string;
+};
+
+export const useBookStore = defineStore('BookStore', () => {
+  const books = ref<State['books']>([]); 
+  const loading = ref<State['loading']>(false);
+  const searchTerm = ref<State['searchTerm']>('');
+
+  async function searchBooksAction(term: string) {
+    loading.value = true;
+    searchTerm.value = term;
+    books.value = await searchBooks(term);
+    loading.value = false;
+  }
+
+  function getBookById(id: string): Book | undefined {
+    return books.value.find((book: Book) => book.id === id);
+  }
+
+  return {
+    books,
+    loading,
+    searchTerm,
+    searchBooks: searchBooksAction,
+    getBookById,
+  };
+});
