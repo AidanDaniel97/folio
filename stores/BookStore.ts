@@ -1,11 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { searchBooks } from '../assets/ts/apiClient';
-
-type Book = {
-  id: string;
-  title: string;
-};
+import { searchBooks, searchBookById } from '../assets/ts/apiClient';
 
 type State = {
   books: Book[] | any; // TODO: REMOVE ANY
@@ -25,6 +20,12 @@ export const useBookStore = defineStore('BookStore', () => {
     loading.value = false;
   }
 
+  async function searchBookByIdAction(id: string) {
+    loading.value = true; 
+    books.value.push(await searchBookById(id));
+    loading.value = false;
+  }
+
   function getBookById(id: string): Book | undefined {
     return books.value.find((book: Book) => book.id === id);
   }
@@ -34,6 +35,7 @@ export const useBookStore = defineStore('BookStore', () => {
     loading,
     searchTerm,
     searchBooks: searchBooksAction,
+    searchBookById: searchBookByIdAction,
     getBookById,
   };
 });

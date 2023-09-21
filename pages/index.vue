@@ -6,15 +6,23 @@
         v-if="books.length > 0"
         class="flex flex-auto flex-wrap justify-between gap-10"
       >
-        <MoleculesBookCard
+        <NuxtLink
           v-for="(book, key) in books"
           :key="`book-${key}`"
+          :to="{
+            name: 'books-title',
+            params: { title: titleToSlug(book.volumeInfo?.title) },
+            query: { id: book.id },
+          }"
           class="w-1/3 flex-grow"
-          :title="book.volumeInfo?.title"
-          :subtitle="book.volumeInfo?.subtitle"
-          :description="formattedDescription(book.volumeInfo?.description)"
-          :imageSrc="book.volumeInfo?.imageLinks?.thumbnail"
-        ></MoleculesBookCard>
+        >
+          <MoleculesBookCard
+            :title="book.volumeInfo?.title"
+            :subtitle="book.volumeInfo?.subtitle"
+            :description="formattedDescription(book.volumeInfo?.description)"
+            :imageSrc="book.volumeInfo?.imageLinks?.thumbnail"
+          ></MoleculesBookCard>
+        </NuxtLink>
       </div>
 
       <!-- No Results -->
@@ -36,7 +44,7 @@
 <script setup lang="ts">
 import { useBookStore } from "~/stores/BookStore";
 import { storeToRefs } from "pinia";
-import { truncateString } from "~/assets/ts/utils";
+import { truncateString, titleToSlug } from "~/assets/ts/utils";
 
 const BookStore = useBookStore();
 const { books, searchTerm } = storeToRefs(BookStore);
