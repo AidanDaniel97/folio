@@ -1,5 +1,8 @@
 <template>
   <div>
+    <NuxtLink to="/">
+      <h1 class="text-xl font-bold">Back to search</h1>
+    </NuxtLink>
     <!-- Display book data -->
     <div v-if="!pending && book">
       <MoleculesBookCard

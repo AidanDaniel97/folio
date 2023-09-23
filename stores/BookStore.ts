@@ -13,11 +13,16 @@ export const useBookStore = defineStore('BookStore', () => {
   const loading = ref<State['loading']>(false);
   const searchTerm = ref<State['searchTerm']>('');
 
-  async function searchBooksAction(term: string) {
-    loading.value = true;
-    searchTerm.value = term;
-    books.value = await searchBooks(term);
-    loading.value = false;
+  async function searchBooksAction(term: string) { 
+    if(term){
+      loading.value = true;
+      searchTerm.value = term;
+      books.value = await searchBooks(term);
+      loading.value = false;
+      return;
+    }
+    books.value = [];
+   
   }
 
   async function searchBookByIdAction(id: string) {
